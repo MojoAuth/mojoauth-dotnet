@@ -1,0 +1,66 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style type="text/css">
+    .alert-bar {
+        display: none;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <input type="email" id="email" placeholder="enter your email address"/>
+    <button type="button" onclick="sendMagicLink()">Send</button>
+    
+    <div id="alert-bar" class="alert alert-success alert-bar" role="alert">
+        We have sent an email, please click on the verification you have received!
+    </div>
+    <pre id="code" class="alert-bar">
+        <code>
+            <kbd id="json-code-block" ></kbd>
+        </code>
+    </pre>
+
+    <script type="text/javascript">
+        function sendMagicLink() {
+            var email = document.getElementById("email").value;
+            if (email) {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "Home/SendMagicLink", true);
+                xhttp.setRequestHeader('Content-type', 'application/json');
+                xhttp.send(JSON.stringify({email: email}));
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState === 4 && this.status === 200) {
+                        var data = JSON.parse(xhttp.responseText);
+                        if (data && data.stateId) {
+                            document.getElementById("alert-bar").style.display = "block";
+                            checkAuthStatus(data.stateId);
+                        }
+                    }
+                };
+            }
+        }
+
+        function checkAuthStatus(stateId) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "Home/ValidateStateId?stateId=" + stateId, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+
+                    var responseData = JSON.parse(xhttp.responseText);
+                    if (xhttp.responseText && responseData && responseData.authenticated) {
+                        document.getElementById("code").style.display = "block";
+                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData,null,2);
+                    } else { 
+                        setTimeout(function () {checkAuthStatus(stateId)}, 3000);
+                    }
+                }
+            };
+        }
+    </script>
+</div>

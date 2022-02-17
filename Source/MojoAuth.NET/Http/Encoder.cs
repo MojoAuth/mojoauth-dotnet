@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace MojoAuth.NET.Http
 {
@@ -47,7 +48,7 @@ namespace MojoAuth.NET.Http
             return content;
         }
 
-        public object DeserializeResponse(HttpContent content, Type responseType)
+        public async Task<object> DeserializeResponse(HttpContent content, Type responseType)
         {
             if (content.Headers.ContentType == null)
             {
@@ -69,7 +70,7 @@ namespace MojoAuth.NET.Http
                 content = new StringContent(Gunzip(buf), Encoding.UTF8);
             }
 
-            return serializer.Decode(content, responseType);
+            return await serializer.Decode(content, responseType);
         }
 
         private ISerializer GetSerializer(string contentType)

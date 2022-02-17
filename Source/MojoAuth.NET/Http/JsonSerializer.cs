@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
+using System.Threading.Tasks;
 
 namespace MojoAuth.NET.Http
 {
@@ -12,10 +13,13 @@ namespace MojoAuth.NET.Http
             return BaseConstants.ContentTypeApplicationJson;
         }
 
-        public object Decode(HttpContent content, Type responseType)
+        public async Task<object> Decode(HttpContent content, Type responseType)
         {
-            var jsonSerializer = new DataContractJsonSerializer(responseType);
-            var jsonString = content.ReadAsStringAsync().Result;
+            var jsonSerializer = new DataContractJsonSerializer(responseType, new DataContractJsonSerializerSettings
+            {
+                DateTimeFormat = new System.Runtime.Serialization.DateTimeFormat("yyyy-MM-ddThh:mm:ssZ")
+            });
+            var jsonString = await content.ReadAsStringAsync();
 
             using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString)))
             {

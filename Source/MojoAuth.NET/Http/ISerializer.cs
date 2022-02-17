@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace MojoAuth.NET.Http
 {
@@ -7,6 +8,6 @@ namespace MojoAuth.NET.Http
     {
         string GetContentTypeRegexPattern();
         HttpContent Encode(HttpRequest request);
-        object Decode(HttpContent content, Type responseType);
+        Task<object> Decode(HttpContent content, Type responseType);
     }
 }

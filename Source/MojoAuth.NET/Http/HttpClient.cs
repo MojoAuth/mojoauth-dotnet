@@ -63,14 +63,14 @@ namespace MojoAuth.NET.Http
                 object responseBody = null;
                 if (response.Content.Headers.ContentType != null)
                 {
-                    responseBody = Encoder.DeserializeResponse(response.Content, request.ResponseType);
+                    responseBody = await Encoder.DeserializeResponse(response.Content, request.ResponseType);
                 }
                 return new HttpResponse(response.StatusCode, responseBody);
             }
 
             if (response.Content.Headers.ContentLength != null && response.Content.Headers.ContentLength > 0)
             {
-                var errorBody = (MojoAuthError)Encoder.DeserializeResponse(response.Content, typeof(MojoAuthError));
+                var errorBody = (MojoAuthError) await Encoder.DeserializeResponse(response.Content, typeof(MojoAuthError));
                 return new HttpResponse(response.StatusCode, errorBody);
             }
             
