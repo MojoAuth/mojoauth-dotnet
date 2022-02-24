@@ -54,6 +54,7 @@
 
                     var responseData = JSON.parse(xhttp.responseText);
                     if (xhttp.responseText && responseData && responseData.authenticated) {
+                        var data = checkWebAuthn(responseData.user.identifier)
                         document.getElementById("code").style.display = "block";
                         document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData,null,2);
                     } else { 
@@ -61,6 +62,63 @@
                     }
                 }
             };
+        }
+
+        function checkWebAuthn(email) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "Home/CheckWebAuthnRequest?email=" + email, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+
+                    var responseData = JSON.parse(xhttp.responseText);
+                    if (xhttp.responseText && responseData && responseData.authenticated) {
+                        if (responseData.webauthn_registered == false && this.responseData.first_login == true) {
+                            
+                        }
+                        document.getElementById("code").style.display = "block";
+                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
+                    }
+                }
+            };
+        }
+
+        function RegisterWebAuthnStart(token) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "Home/RegistrationWebAuthnInitialize, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+
+                    var responseData = JSON.parse(xhttp.responseText);
+                    if (xhttp.responseText && responseData && responseData.StateId) {
+
+                        document.getElementById("code").style.display = "block";
+                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
+                    }
+                }
+            };
+        }
+
+        function RegisterWebAuthnFinish(stateId, id, rawId, type, attestationObject, clientDataJSON) {
+
+                var xhttp = new XMLHttpRequest();
+            xhttp.open("POST", "Home/RegistrationWebAuthnFinish?state_id=" + stateId, true);
+                xhttp.setRequestHeader('Content-type', 'application/json');
+            xhttp.send(JSON.stringify({ id: id, rawId: rawId, type: type, attestationObject: attestationObject, clientDataJSON: clientDataJSON }));
+
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4 && this.status === 200) {
+                        var data = JSON.parse(xhttp.responseText);
+                        if (data && data.authenticated) {
+                            document.getElementById("alert-bar").style.display = "block";
+                            checkAuthStatus(data.stateId);
+                        }
+                    }
+                };
+            
         }
     </script>
 </div>
