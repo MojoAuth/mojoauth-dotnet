@@ -38,7 +38,7 @@ namespace MojoAuth.NET.Core
         public string RefreshToken { get; set; }
 
         [DataMember(Name = "expires_in")]
-        public DateTime ExpiresIn { get; set; }
+        public string ExpiresIn { get; set; }
 
         [DataMember(Name = "token_type")]
         public string TokenType { get; set; }
@@ -48,10 +48,10 @@ namespace MojoAuth.NET.Core
     public class User
     {
         [DataMember(Name = "created_at")]
-        public DateTime CreatedAt { get; set; }
+        public string CreatedAt { get; set; }
 
         [DataMember(Name = "updated_at")]
-        public DateTime UpdatedAt { get; set; }
+        public string UpdatedAt { get; set; }
 
         [DataMember(Name = "issuer")]
         public string Issuer { get; set; }

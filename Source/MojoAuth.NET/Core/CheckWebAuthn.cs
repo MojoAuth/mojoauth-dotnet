@@ -20,9 +20,9 @@ namespace MojoAuth.NET.Core
     public class CheckWebAuthnResponse
     {
         [DataMember(Name = "webauthn_registered")]
-        public bool WebauthnRegistered;
+        public bool WebAuthnRegistered { get; set; }
     
         [DataMember(Name = "first_login")]
-        public bool FirstLogin;
+        public bool FirstLogin { get; set; }
     }
 }

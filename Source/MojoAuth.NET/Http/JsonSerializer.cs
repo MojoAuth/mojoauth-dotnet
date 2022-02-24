@@ -15,13 +15,10 @@ namespace MojoAuth.NET.Http
 
         public async Task<object> Decode(HttpContent content, Type responseType)
         {
-            var jsonSerializer = new DataContractJsonSerializer(responseType, new DataContractJsonSerializerSettings
-            {
-                DateTimeFormat = new System.Runtime.Serialization.DateTimeFormat("yyyy-MM-ddThh:mm:ssZ")
-            });
-            var jsonString = await content.ReadAsStringAsync();
+            var jsonSerializer = new DataContractJsonSerializer(responseType);
+            var jsonString = await content.ReadAsByteArrayAsync();
 
-            using (var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(jsonString)))
+            using (var ms = new MemoryStream(jsonString))
             {
                 return jsonSerializer.ReadObject(ms);
             }

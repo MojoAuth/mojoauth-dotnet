@@ -12,7 +12,7 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <input type="email" id="email" placeholder="enter your email address"/>
-    <button type="button" onclick="sendMagicLink()">Send</button>
+    <button type="button" onclick="sendMagicLinkAndCheckWebAuthnStatus()">Send</button>
     
     <div id="alert-bar" class="alert alert-success alert-bar" role="alert">
         We have sent an email, please click on the verification you have received!
@@ -21,26 +21,33 @@
         <code>
             <kbd id="json-code-block" ></kbd>
         </code>
+        <button type="button" onclick="registerWebAuthnStart()">Add WebAuthn</button>
     </pre>
 
     <script type="text/javascript">
-        function sendMagicLink() {
+        var isFirstLogin = false;
+        var webAuthnRegistered = false;
+        var accessToken = "";
+
+        function sendMagicLinkAndCheckWebAuthnStatus() {
             var email = document.getElementById("email").value;
             if (email) {
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("POST", "Home/SendMagicLink", true);
-                xhttp.setRequestHeader('Content-type', 'application/json');
-                xhttp.send(JSON.stringify({email: email}));
+                checkWebAuthn(email, function() {
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.open("POST", "Home/SendMagicLink", true);
+                    xhttp.setRequestHeader('Content-type', 'application/json');
+                    xhttp.send(JSON.stringify({email: email}));
 
-                xhttp.onreadystatechange = function() {
-                    if (this.readyState === 4 && this.status === 200) {
-                        var data = JSON.parse(xhttp.responseText);
-                        if (data && data.stateId) {
-                            document.getElementById("alert-bar").style.display = "block";
-                            checkAuthStatus(data.stateId);
+                    xhttp.onreadystatechange = function() {
+                        if (this.readyState === 4 && this.status === 200) {
+                            var data = JSON.parse(xhttp.responseText);
+                            if (data && data.stateId) {
+                                document.getElementById("alert-bar").style.display = "block";
+                                checkAuthStatus(data.stateId);
+                            }
                         }
-                    }
-                };
+                    };
+                });
             }
         }
 
@@ -54,9 +61,9 @@
 
                     var responseData = JSON.parse(xhttp.responseText);
                     if (xhttp.responseText && responseData && responseData.authenticated) {
-                        var data = checkWebAuthn(responseData.user.identifier)
                         document.getElementById("code").style.display = "block";
                         document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData,null,2);
+                        accessToken = responseData.oAuth.accessToken;
                     } else { 
                         setTimeout(function () {checkAuthStatus(stateId)}, 3000);
                     }
@@ -64,7 +71,7 @@
             };
         }
 
-        function checkWebAuthn(email) {
+        function checkWebAuthn(email, sendMagicLinkFunc) {
             var xhttp = new XMLHttpRequest();
             xhttp.open("GET", "Home/CheckWebAuthnRequest?email=" + email, true);
             xhttp.send();
@@ -73,51 +80,72 @@
                 if (this.readyState === 4 && this.status === 200) {
 
                     var responseData = JSON.parse(xhttp.responseText);
-                    if (xhttp.responseText && responseData && responseData.authenticated) {
-                        if (responseData.webauthn_registered == false && this.responseData.first_login == true) {
-                            
+                    if (responseData) {
+                        isFirstLogin = responseData.firstLogin;
+                        webAuthnRegistered = responseData.webAuthnRegistered;
+                        if (!responseData.webAuthnRegistered) {
+                            sendMagicLinkFunc();
                         }
-                        document.getElementById("code").style.display = "block";
-                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
                     }
                 }
             };
         }
 
-        function RegisterWebAuthnStart(token) {
+        function registerWebAuthnStart() {
             var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "Home/RegistrationWebAuthnInitialize, true);
+            xhttp.open("GET", `Home/RegistrationWebAuthnInitialize?token=${accessToken}`, true);
             xhttp.send();
 
             xhttp.onreadystatechange = function () {
                 if (this.readyState === 4 && this.status === 200) {
 
+                    alert(xhttp.responseText);
                     var responseData = JSON.parse(xhttp.responseText);
-                    if (xhttp.responseText && responseData && responseData.StateId) {
-
-                        document.getElementById("code").style.display = "block";
-                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
+                    if (responseData) {
+                        responseData.publicKey.challenge = bufferDecode(responseData.publicKey.challenge);
+                        responseData.publicKey.user.id = bufferDecode(responseData.publicKey.user.id);
+                        responseData.publicKey.rp.id = "localhost";
+                        promptForWebAuthnChallenge(responseData.publicKey);
                     }
                 }
             };
         }
 
-        function RegisterWebAuthnFinish(stateId, id, rawId, type, attestationObject, clientDataJSON) {
+        function bufferDecode(value) {
+            return Uint8Array.from(atob(value), c => c.charCodeAt(0));
+        }
 
-                var xhttp = new XMLHttpRequest();
+        async function promptForWebAuthnChallenge(pubKey) {
+            var cred = await navigator.credentials.create({
+                publicKey: pubKey
+            });
+
+            console.log(cred);
+        }
+
+        function bufferEncode(value) {
+            return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_")
+                .replace(/=/g, "");;
+        }
+
+        function registerWebAuthnFinish(stateId, id, rawId, type, attestationObject, clientDataJSON) {
+
+            var xhttp = new XMLHttpRequest();
             xhttp.open("POST", "Home/RegistrationWebAuthnFinish?state_id=" + stateId, true);
-                xhttp.setRequestHeader('Content-type', 'application/json');
+            xhttp.setRequestHeader('Content-type', 'application/json');
             xhttp.send(JSON.stringify({ id: id, rawId: rawId, type: type, attestationObject: attestationObject, clientDataJSON: clientDataJSON }));
 
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) {
-                        var data = JSON.parse(xhttp.responseText);
-                        if (data && data.authenticated) {
-                            document.getElementById("alert-bar").style.display = "block";
-                            checkAuthStatus(data.stateId);
-                        }
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+                    var data = JSON.parse(xhttp.responseText);
+                    if (data && data.authenticated) {
+                        document.getElementById("alert-bar").style.display = "block";
+                        checkAuthStatus(data.stateId);
                     }
-                };
+                }
+            };
             
         }
     </script>

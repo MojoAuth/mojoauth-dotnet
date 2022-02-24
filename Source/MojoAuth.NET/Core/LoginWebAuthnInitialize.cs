@@ -13,8 +13,6 @@ namespace MojoAuth.NET.Core
         }
     }
 
-
-
     [DataContract]
     public class AllowCredential
     {
@@ -31,7 +29,7 @@ namespace MojoAuth.NET.Core
         public string TxAuthSimple { get; set; }
     }
 
-    public class PublicKey
+    public class PublicKey2
     {
         [DataMember(Name = "challenge")]
         public string Challenge { get; set; }
@@ -58,7 +56,7 @@ namespace MojoAuth.NET.Core
         public string StateId { get; set; }
 
         [DataMember(Name = "publicKey")]
-        public PublicKey PublicKey { get; set; }
+        public PublicKey2 PublicKey { get; set; }
     }
 
 
