@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using MojoAuth.NET.Http;
 
 namespace MojoAuth.NET.Core

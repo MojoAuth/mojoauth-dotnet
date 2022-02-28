@@ -10,7 +10,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("<APIKEY>", "<APISECERT>");
+        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("dba8bcbd-70d7-4ab4-b0d5-600b64d2884b", "<APISECERT>");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -40,14 +40,9 @@ namespace MojoAuth.NET.WebAppSample.Controllers
                 };
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return new JsonResult(errorResponse);
-            } 
-            
-            var jsonResponse = new SendMagicLinkResponse 
-            {
-                StateId = sendMagicLinkResponse.Result.StateId
-            };
+            }
 
-            return new JsonResult(jsonResponse);
+            return new JsonResult(sendMagicLinkResponse.Result);
         }
 
         [HttpGet]

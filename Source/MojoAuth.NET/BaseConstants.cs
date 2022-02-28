@@ -19,7 +19,7 @@ namespace MojoAuth.NET
 
         public const string UserAgent = "MojoAuth.NET HTTP/1.1";
 
-        public const string BaseUrl = "https://api.mojoauth.com";
+        public const string BaseUrl = "https://dev-api.mojoauth.com";
 
         public const string Version = "0.1";
     }
