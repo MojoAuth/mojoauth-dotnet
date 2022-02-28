@@ -19,9 +19,11 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class CheckWebAuthnResponse
     {
+        [JsonPropertyName("webauthn_registered")]
         [DataMember(Name = "webauthn_registered")]
         public bool WebAuthnRegistered { get; set; }
-    
+
+        [JsonPropertyName("first_login")]
         [DataMember(Name = "first_login")]
         public bool FirstLogin { get; set; }
     }

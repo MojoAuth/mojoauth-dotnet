@@ -21,13 +21,14 @@
         <code>
             <kbd id="json-code-block" ></kbd>
         </code>
-        <button type="button" onclick="registerWebAuthnStart()">Add WebAuthn</button>
+        <button type="button" id="webauthn-button">Add WebAuthn</button>
     </pre>
-
+   <script    src="https://mj-dev-cdn.netlify.app/js/mojoauth.min.js">
+   </script>
     <script type="text/javascript">
         var isFirstLogin = false;
         var webAuthnRegistered = false;
-        var accessToken = "";
+//        var accessToken = "";
 
         function sendMagicLinkAndCheckWebAuthnStatus() {
             var email = document.getElementById("email").value;
@@ -41,9 +42,9 @@
                     xhttp.onreadystatechange = function() {
                         if (this.readyState === 4 && this.status === 200) {
                             var data = JSON.parse(xhttp.responseText);
-                            if (data && data.stateId) {
+                            if (data && data.state_id) {
                                 document.getElementById("alert-bar").style.display = "block";
-                                checkAuthStatus(data.stateId);
+                                checkAuthStatus(data.state_id);
                             }
                         }
                     };
@@ -53,7 +54,7 @@
 
         function checkAuthStatus(stateId) {
             var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", "Home/ValidateStateId?stateId=" + stateId, true);
+            xhttp.open("GET", "Home/ValidateStateId?state_id=" + stateId, true);
             xhttp.send();
 
             xhttp.onreadystatechange = function() {
@@ -63,7 +64,8 @@
                     if (xhttp.responseText && responseData && responseData.authenticated) {
                         document.getElementById("code").style.display = "block";
                         document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData,null,2);
-                        accessToken = responseData.oAuth.accessToken;
+//                        accessToken = responseData.oAuth.accessToken;
+                        document.getElementById("webauthn-button").onclick=registerWebAuthnStart(responseData.oAuth.accessToken)
                     } else { 
                         setTimeout(function () {checkAuthStatus(stateId)}, 3000);
                     }
@@ -81,72 +83,38 @@
 
                     var responseData = JSON.parse(xhttp.responseText);
                     if (responseData) {
-                        isFirstLogin = responseData.firstLogin;
-                        webAuthnRegistered = responseData.webAuthnRegistered;
-                        if (!responseData.webAuthnRegistered) {
+                        isFirstLogin = responseData.first_login;
+                        webAuthnRegistered = responseData.webauthn_registered;
+                        if (!responseData.webauthn_registered) {
                             sendMagicLinkFunc();
-                        }
+                        }else{
+                            const mojoauth = new MojoAuth( "<<Your APIKEY>>" );
+                            var data = mojoauth.loginWebauthn(email)
+                            if (data && data.authenticated) {
+                        document.getElementById("code").style.display = "block";
+                        document.getElementById("json-code-block").innerHTML = JSON.stringify(data,null,2);
+//                        accessToken = data.oAuth.accessToken;
+                        document.getElementById("webauthn-button").onclick=registerWebAuthnStart(data.oAuth.accessToken)
+ 
+                    }
+                        } 
                     }
                 }
             };
         }
 
-        function registerWebAuthnStart() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("GET", `Home/RegistrationWebAuthnInitialize?token=${accessToken}`, true);
-            xhttp.send();
-
-            xhttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-
-                    alert(xhttp.responseText);
-                    var responseData = JSON.parse(xhttp.responseText);
-                    if (responseData) {
-                        responseData.publicKey.challenge = bufferDecode(responseData.publicKey.challenge);
-                        responseData.publicKey.user.id = bufferDecode(responseData.publicKey.user.id);
-                        responseData.publicKey.rp.id = "localhost";
-                        promptForWebAuthnChallenge(responseData.publicKey);
-                    }
-                }
-            };
+        function registerWebAuthnStart(accessToken){
+            const mojoauth = new MojoAuth( "<<Your APIKEY>>" );
+            var data = mojoauth.enableWebauthn(accessToken)
+            if (data.authenticated){
+                alert("WebAuthn is Registred")
+            }
         }
 
-        function bufferDecode(value) {
-            return Uint8Array.from(atob(value), c => c.charCodeAt(0));
-        }
 
-        async function promptForWebAuthnChallenge(pubKey) {
-            var cred = await navigator.credentials.create({
-                publicKey: pubKey
-            });
 
-            console.log(cred);
-        }
 
-        function bufferEncode(value) {
-            return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
-                .replace(/\+/g, "-")
-                .replace(/\//g, "_")
-                .replace(/=/g, "");;
-        }
 
-        function registerWebAuthnFinish(stateId, id, rawId, type, attestationObject, clientDataJSON) {
 
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("POST", "Home/RegistrationWebAuthnFinish?state_id=" + stateId, true);
-            xhttp.setRequestHeader('Content-type', 'application/json');
-            xhttp.send(JSON.stringify({ id: id, rawId: rawId, type: type, attestationObject: attestationObject, clientDataJSON: clientDataJSON }));
-
-            xhttp.onreadystatechange = function () {
-                if (this.readyState === 4 && this.status === 200) {
-                    var data = JSON.parse(xhttp.responseText);
-                    if (data && data.authenticated) {
-                        document.getElementById("alert-bar").style.display = "block";
-                        checkAuthStatus(data.stateId);
-                    }
-                }
-            };
-            
-        }
     </script>
 </div>

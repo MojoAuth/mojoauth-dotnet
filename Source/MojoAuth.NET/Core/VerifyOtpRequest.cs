@@ -17,9 +17,11 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class VerifyOtpPayload
     {
+        [JsonPropertyName("state_id")]
         [DataMember(Name = "state_id")]
         public string StateId;       
         
+        [JsonPropertyName("otp")]
         [DataMember(Name = "otp")]
         public string OTP;
     }

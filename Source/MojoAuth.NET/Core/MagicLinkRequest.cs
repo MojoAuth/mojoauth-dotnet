@@ -17,6 +17,7 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class SendMagicLinkPayload
     {
+        [JsonPropertyName("email")]
         [DataMember(Name = "email")]
         public string Email;
     }
@@ -24,6 +25,7 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class SendMagicLinkResponse
     {
+        [JsonPropertyName("state_id")]
         [DataMember(Name = "state_id")]
         public string StateId;
     }

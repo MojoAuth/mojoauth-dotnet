@@ -10,7 +10,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("77c08f48-63fa-4d12-8dcd-b87b12834408", "c82fb996tljk7bmhrohg.f8RLj4tqcoFoBSqizfH6ik");
+        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("<APIKEY>", "<APISECERT>");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -65,74 +65,6 @@ namespace MojoAuth.NET.WebAppSample.Controllers
             }
 
             return new JsonResult(authenticationStatus.Result);
-        }
-
-       [HttpGet]
-        public async Task<JsonResult> RegistrationWebAuthnInitialize([FromQuery] string token)
-        {
-            var registrationWebAuthnInitialize = await MojoAuthHttpClient.RegistrationWebAuthnInitialize(token);
-            if (registrationWebAuthnInitialize.Error != null)
-            {
-                var errorResponse = new ErrorResponse
-                {
-                    Error = registrationWebAuthnInitialize.Error.Description
-                };
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new JsonResult(errorResponse);
-            }
-
-            return new JsonResult(registrationWebAuthnInitialize.Result);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> RegistrationWebAuthnFinish([FromBody] string stateId,string id,string rawId,string type,string attestationObject,string clientDataJSON)
-        {
-            var registrationWebAuthnFinish = await MojoAuthHttpClient.RegistrationWebAuthnFinish(stateId,id,rawId,type,attestationObject,clientDataJSON);
-            if (registrationWebAuthnFinish.Error != null)
-            {
-                var errorResponse = new ErrorResponse
-                {
-                    Error = registrationWebAuthnFinish.Error.Description
-                };
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new JsonResult(errorResponse);
-            }
-
-            return new JsonResult(registrationWebAuthnFinish.Result);
-        }
-
-       [HttpGet]
-        public async Task<JsonResult> LoginWebAuthnInitialize([FromQuery] string email)
-        {
-            var loginWebAuthnInitialize = await MojoAuthHttpClient.LoginWebAuthnInitialize(email);
-            if (loginWebAuthnInitialize.Error != null)
-            {
-                var errorResponse = new ErrorResponse
-                {
-                    Error = loginWebAuthnInitialize.Error.Description
-                };
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new JsonResult(errorResponse);
-            }
-
-            return new JsonResult(loginWebAuthnInitialize.Result);
-        }
-
-        [HttpPost]
-        public async Task<JsonResult> LoginWebAuthnFinish([FromBody] string stateId,string email,string id,string rawId,string type,string txAuthSimple)
-        {
-            var loginWebAuthnFinish = await MojoAuthHttpClient.LoginWebAuthnFinish(stateId,email,id,rawId,type,txAuthSimple);
-            if (loginWebAuthnFinish.Error != null)
-            {
-                var errorResponse = new ErrorResponse
-                {
-                    Error = loginWebAuthnFinish.Error.Description
-                };
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return new JsonResult(errorResponse);
-            }
-
-            return new JsonResult(loginWebAuthnFinish.Result);
         }
 
        [HttpGet]
