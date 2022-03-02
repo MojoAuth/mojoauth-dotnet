@@ -66,7 +66,9 @@
                                 document.getElementById("code").style.display = "block";
                                 document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData,null,2);
 
-                                document.getElementById("webauthn-button").onclick = registerWebAuthnStart(responseData.oauth.access_token);
+                                document.getElementById("webauthn-button").onclick = () => {
+                                    registerWebAuthnStart(responseData.oauth.access_token);
+                                };
                             } else {
                                 setTimeout(function () {checkAuthStatus(stateId)}, 3000);
                             }
@@ -89,12 +91,15 @@
                                 if (!responseData.webauthn_registered) {
                                     sendMagicLinkFunc();
                                 }else{
-                                    var data = mojoauth.loginWebauthn(email);
-                                    if (data && data.authenticated) { 
-                                        document.getElementById("code").style.display = "block";
-                                        document.getElementById("json-code-block").innerHTML = JSON.stringify(data,null,2);
-                                        document.getElementById("webauthn-button").onclick = registerWebAuthnStart(data.oauth.access_token);
-                                    }
+                                    mojoauth.loginWebauthn(email).then((data) => {
+    
+                                            document.getElementById("code").style.display = "block";
+                                            document.getElementById("json-code-block").innerHTML = JSON.stringify(data,null,2);
+                                            document.getElementById("webauthn-button").style.display = "none";
+
+                                    }).catch((e) => {
+                                        console.log(e);
+                                    });
                                 }
                             }
                         }

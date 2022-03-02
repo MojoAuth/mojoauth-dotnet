@@ -21,6 +21,14 @@ namespace MojoAuth.NET.Core
         [JsonPropertyName("email")]
         [DataMember(Name = "email")]
         public string Email;
+
+        [JsonPropertyName("language")]
+        [DataMember(Name = "language", EmitDefaultValue = true, IsRequired = false)]
+        public string Language;
+
+        [JsonPropertyName("redirect_url")]
+        [DataMember(Name = "redirect_url", EmitDefaultValue = true, IsRequired = false)]
+        public string RedirectUrl;
     }
 
     [DataContract]

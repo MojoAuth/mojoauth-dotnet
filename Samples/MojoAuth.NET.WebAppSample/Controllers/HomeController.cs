@@ -1,16 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MojoAuth.NET.WebAppSample.Models;
 using System.Diagnostics;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace MojoAuth.NET.WebAppSample.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("dba8bcbd-70d7-4ab4-b0d5-600b64d2884b", "<APISECERT>");
+        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("API_KEY", "API_SECRET");
 
         public HomeController(ILogger<HomeController> logger)
         {
