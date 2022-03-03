@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using MojoAuth.NET.Http;
 
 namespace MojoAuth.NET.Core
@@ -17,6 +18,7 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class EmailOtpPayload
     {
+        [JsonPropertyName("email")]
         [DataMember(Name = "email")]
         public string Email;
     }
@@ -24,7 +26,8 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class EmailOtpResponse
     {
+        [JsonPropertyName("state_id")]
         [DataMember(Name = "state_id")]
-        public string StateId;
+        public string StateId { get; set; }
     }
 }

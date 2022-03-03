@@ -8,7 +8,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("77c08f48-63fa-4d12-8dcd-b87b12834408", "c82fb996tljk7bmhrohg.f8RLj4tqcoFoBSqizfH6ik");
+        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("API_KEY", "API_SECRET");
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -38,14 +38,9 @@ namespace MojoAuth.NET.WebAppSample.Controllers
                 };
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
                 return new JsonResult(errorResponse);
-            } 
-            
-            var jsonResponse = new SendMagicLinkResponse 
-            {
-                StateId = sendMagicLinkResponse.Result.StateId
-            };
+            }
 
-            return new JsonResult(jsonResponse);
+            return new JsonResult(sendMagicLinkResponse.Result);
         }
 
         [HttpGet]
@@ -63,6 +58,23 @@ namespace MojoAuth.NET.WebAppSample.Controllers
             }
 
             return new JsonResult(authenticationStatus.Result);
+        }
+
+       [HttpGet]
+        public async Task<JsonResult> CheckWebAuthnRequest([FromQuery] string email)
+        {
+            var checkWebAuthnRequest = await MojoAuthHttpClient.CheckWebAuthnRequest(email);
+            if (checkWebAuthnRequest.Error != null)
+            {
+                var errorResponse = new ErrorResponse
+                {
+                    Error = checkWebAuthnRequest.Error.Description
+                };
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return new JsonResult(errorResponse);
+            }
+
+            return new JsonResult(checkWebAuthnRequest.Result);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

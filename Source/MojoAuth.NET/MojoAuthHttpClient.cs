@@ -15,6 +15,11 @@ namespace MojoAuth.NET
             return UserAgent.GetUserAgentHeader();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
         public async Task<Response<SendMagicLinkResponse>> SendMagicLink(string email)
         {
             var sendMagicLinkRequest = new SendMagicLinkRequest(email);
@@ -23,6 +28,11 @@ namespace MojoAuth.NET
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stateId"></param>
+        /// <returns></returns>
         public async Task<Response<AuthenticationStatusResponse>> CheckAuthenticationStatus(string stateId)
         {
             var authStatusRequest = new AuthenticationStatusRequest(stateId);
@@ -57,5 +67,14 @@ namespace MojoAuth.NET
             var response = await this.Execute(validateTokenRequest);
             return new Response<ValidateTokenResponse>(response);
         }
+
+        public async Task<Response<CheckWebAuthnResponse>> CheckWebAuthnRequest(string email)
+        {
+            var checkWebAuthnRequest = new CheckWebAuthnRequest(email);
+            var response = await this.Execute(checkWebAuthnRequest);
+            return new Response<CheckWebAuthnResponse>(response);
+        }
+
+        
     }
 }
