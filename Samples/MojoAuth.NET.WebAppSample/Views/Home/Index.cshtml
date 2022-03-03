@@ -23,13 +23,13 @@
         </code>
     <button type="button" id="webauthn-button">Add WebAuthn</button>
     </pre>
-    <script src="https://mj-dev-cdn.netlify.app/js/mojoauth.min.js">
+    <script src="https://cdn.mojoauth.com/js/mojoauth.min.js">
     </script>
     <script type="text/javascript">
                 var isFirstLogin = false;
                 var webAuthnRegistered = false;
         //        var accessToken = "";
-                const mojoauth = new MojoAuth("dba8bcbd-70d7-4ab4-b0d5-600b64d2884b");
+                const mojoauth = new MojoAuth("API_KEY");
 
                 function sendMagicLinkAndCheckWebAuthnStatus() {
                     var email = document.getElementById("email").value;
@@ -92,7 +92,7 @@
                                     sendMagicLinkFunc();
                                 }else{
                                     mojoauth.loginWebauthn(email).then((data) => {
-    
+
                                             document.getElementById("code").style.display = "block";
                                             document.getElementById("json-code-block").innerHTML = JSON.stringify(data,null,2);
                                             document.getElementById("webauthn-button").style.display = "none";
