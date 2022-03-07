@@ -1,4 +1,4 @@
-                               # MojoAuth DotNet SDK
+# MojoAuth DotNet SDK
 
 ## Documentation
 
@@ -7,7 +7,7 @@
 ## Installation
 
 Run the following command in the NuGet Package Manager Console:
-
+readme
 `PM> Install-Package MojoAuth.NET`
 
 ## Usage
