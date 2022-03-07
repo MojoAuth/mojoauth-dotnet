@@ -9,9 +9,9 @@
 		<Authors>MojoAuth</Authors>
 		<Company>MojoAuth</Company>
 		<Product>MojoAuth.NET</Product>
-		<Description>The package includes auth API calls like MagicLink, WebAuthn, etc.</Description>
+		<Description>The MojoAuth APIs Client Library for working with MojoAuth services.</Description>
 		<Copyright>Copyright © MojoAuth 2022</Copyright>
-		<Summary>The MojoAuth APIs Client Library for working with MojoAuth services.</Summary>
+		<Summary>The MojoAuth APIs Client Library for working with MojoAuth services, The package includes auth API calls like MagicLink, WebAuthn, etc.</Summary>
 		<Title>MojoAuth.NET</Title>
 		<PackageId>MojoAuth.NET</PackageId>
 		<PackageTags>MojoAuth;MagicLink;WebAuthn;Passwordless;</PackageTags>
@@ -19,6 +19,7 @@
 		<PackageIcon>packageIcon.png</PackageIcon>
 		<PackageProjectUrl>https://mojoauth.com/</PackageProjectUrl>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Version>1.0.1</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
