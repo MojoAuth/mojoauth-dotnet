@@ -1,22 +1,13 @@
-<p align="center">
-  <a href="https://www.mojoauth.com">
-    <img alt="MojoAuth" src="https://mojoauth.com/blog/assets/images/logo.svg" width="200" />
-  </a>
-</p>
-
-<h1 align="center">
-  MojoAuth DotNet SDK
-</h1>
-
+# MojoAuth DotNet SDK
 
 ## Documentation
 
-* [Configuration](https://mojoauth.com/docs/) - Everything you need to begin using the MojoAuth SDK.
+* [Configuration](https://mojoauth.com/docs/sdks/asp.net/) - Everything you need to begin using the MojoAuth SDK.
 
 ## Installation
 
 Run the following command in the NuGet Package Manager Console:
-
+readme
 `PM> Install-Package MojoAuth.NET`
 
 ## Usage
@@ -40,8 +31,8 @@ Console.WriteLine(resp.Result.StateId);
 
 We appreciate all kinds of contributions from anyone.
 
-Please check the [contributing guide](CONTRIBUTING.md) to become a contributor.
+Please check the [contributing guide](https://github.com/MojoAuth/mojoauth-dotnet/blob/main/CONTRIBUTING.md) to become a contributor.
 
 ## License
 
-For more information on licensing, please refer to [License](LICENSE)
+For more information on licensing, please refer to [License](https://github.com/MojoAuth/mojoauth-dotnet/blob/main/LICENSE)

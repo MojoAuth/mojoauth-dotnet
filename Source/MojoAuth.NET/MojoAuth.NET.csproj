@@ -1,11 +1,42 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/MojoAuth/mojoauth-dotnet</RepositoryUrl>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Authors>MojoAuth</Authors>
+		<Company>MojoAuth</Company>
+		<Product>MojoAuth.NET</Product>
+		<Description>The package includes auth API calls like MagicLink, WebAuthn, etc.</Description>
+		<Copyright>Copyright © MojoAuth 2022</Copyright>
+		<Summary>The MojoAuth APIs Client Library for working with MojoAuth services.</Summary>
+		<Title>MojoAuth.NET</Title>
+		<PackageId>MojoAuth.NET</PackageId>
+		<PackageTags>MojoAuth;MagicLink;WebAuthn;Passwordless;</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageIcon>packageIcon.png</PackageIcon>
+		<PackageProjectUrl>https://mojoauth.com/</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="6.0.2" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Include="..\..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Text.Json" Version="6.0.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="packageIcon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 </Project>
