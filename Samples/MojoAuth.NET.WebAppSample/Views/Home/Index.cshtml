@@ -13,8 +13,9 @@
     <h1 class="display-4">Welcome</h1>
     <input type="email" id="email" placeholder="enter your email address" />
     <button type="button" onclick="sendMagicLinkAndCheckWebAuthnStatus()">Send</button>
-    <button onclick="document.location='https://api.mojoauth.com/oauth/social?api_key=API_KEY&provider=google&redirect_url=RedirectUrl'">
-        Social Login
+    <br/>
+    <button style="margin-top: 1rem;" onclick="document.location='https://api.mojoauth.com/oauth/social?api_key=@ViewBag.MojoAuthKey&provider=google&redirect_url=@ViewBag.MojoAuthRedirectUri'">
+        Google Login
     </button>
         <div id="alert-bar" class="alert alert-success alert-bar" role="alert">
             We have sent an email, please click on the verification you have received!
@@ -26,112 +27,114 @@
         <button type="button" id="webauthn-button">Add WebAuthn</button>
     </pre>
         <script src="https://cdn.mojoauth.com/js/mojoauth.min.js"></script>
-        <script type="text/javascript">var isFirstLogin = false;
-            var webAuthnRegistered = false;
-            //        var accessToken = "";
-            const mojoauth = new MojoAuth("API_KEY");
-            // Check Redirection
-            const parseParams = (querystring) => {
+    <script type="text/javascript">
+        var isFirstLogin = false;
+        var webAuthnRegistered = false;
+        //        var accessToken = "";
+        const mojoauth = new MojoAuth("@ViewBag.MojoAuthKey");
+        // Check Redirection
+        const parseParams = (querystring) => {
 
-                // parse query string
-                const params = new URLSearchParams(querystring);
+            // parse query string
+            const params = new URLSearchParams(querystring);
 
-                const obj = {};
+            const obj = {};
 
-                // iterate over all keys
-                for (const key of params.keys()) {
-                    if (params.getAll(key).length > 1) {
-                        obj[key] = params.getAll(key);
-                    } else {
-                        obj[key] = params.get(key);
-                    }
+            // iterate over all keys
+            for (const key of params.keys()) {
+                if (params.getAll(key).length > 1) {
+                    obj[key] = params.getAll(key);
+                } else {
+                    obj[key] = params.get(key);
                 }
-
-                return obj;
-            };
-            const params = parseParams(window.location.search)
-            if (params && params.state_id) {
-                checkAuthStatus(params.state_id)
             }
-            function sendMagicLinkAndCheckWebAuthnStatus() {
-                var email = document.getElementById("email").value;
-                if (email) {
-                    checkWebAuthn(email, function () {
-                        var xhttp = new XMLHttpRequest();
-                        xhttp.open("POST", "Home/SendMagicLink", true);
-                        xhttp.setRequestHeader('Content-type', 'application/json');
-                        xhttp.send(JSON.stringify({ email: email }));
 
-                        xhttp.onreadystatechange = function () {
-                            if (this.readyState === 4 && this.status === 200) {
-                                var data = JSON.parse(xhttp.responseText);
-                                if (data && data.state_id) {
-                                    document.getElementById("alert-bar").style.display = "block";
-                                    checkAuthStatus(data.state_id);
-                                }
+            return obj;
+        };
+        const params = parseParams(window.location.search)
+        if (params && params.state_id) {
+            checkAuthStatus(params.state_id)
+        }
+        function sendMagicLinkAndCheckWebAuthnStatus() {
+            var email = document.getElementById("email").value;
+            if (email) {
+                checkWebAuthn(email, function () {
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.open("POST", "Home/SendMagicLink", true);
+                    xhttp.setRequestHeader('Content-type', 'application/json');
+                    xhttp.send(JSON.stringify({ email: email }));
+
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState === 4 && this.status === 200) {
+                            var data = JSON.parse(xhttp.responseText);
+                            if (data && data.state_id) {
+                                document.getElementById("alert-bar").style.display = "block";
+                                checkAuthStatus(data.state_id);
                             }
+                        }
+                    };
+                });
+            }
+        }
+
+        function checkAuthStatus(stateId) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "Home/ValidateStateId?stateId=" + stateId, true);
+            xhttp.send();
+
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
+
+                    var responseData = JSON.parse(xhttp.responseText);
+                    if (xhttp.responseText && responseData && responseData.authenticated) {
+                        document.getElementById("code").style.display = "block";
+                        document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
+
+                        document.getElementById("webauthn-button").onclick = () => {
+                            registerWebAuthnStart(responseData.oauth.access_token);
                         };
-                    });
+                    } else {
+                        setTimeout(function () { checkAuthStatus(stateId) }, 3000);
+                    }
                 }
-            }
+            };
+        }
 
-            function checkAuthStatus(stateId) {
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "Home/ValidateStateId?stateId=" + stateId, true);
-                xhttp.send();
+        function checkWebAuthn(email, sendMagicLinkFunc) {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("GET", "Home/CheckWebAuthnRequest?email=" + email, true);
+            xhttp.send();
 
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) {
+            xhttp.onreadystatechange = function () {
+                if (this.readyState === 4 && this.status === 200) {
 
-                        var responseData = JSON.parse(xhttp.responseText);
-                        if (xhttp.responseText && responseData && responseData.authenticated) {
-                            document.getElementById("code").style.display = "block";
-                            document.getElementById("json-code-block").innerHTML = JSON.stringify(responseData, null, 2);
-
-                            document.getElementById("webauthn-button").onclick = () => {
-                                registerWebAuthnStart(responseData.oauth.access_token);
-                            };
+                    var responseData = JSON.parse(xhttp.responseText);
+                    if (responseData) {
+                        isFirstLogin = responseData.first_login;
+                        webAuthnRegistered = responseData.webauthn_registered;
+                        if (!responseData.webauthn_registered) {
+                            sendMagicLinkFunc();
                         } else {
-                            setTimeout(function () { checkAuthStatus(stateId) }, 3000);
+                            mojoauth.loginWebauthn(email).then((data) => {
+
+                                document.getElementById("code").style.display = "block";
+                                document.getElementById("json-code-block").innerHTML = JSON.stringify(data, null, 2);
+                                document.getElementById("webauthn-button").style.display = "none";
+
+                            }).catch((e) => {
+                                console.log(e);
+                            });
                         }
                     }
-                };
-            }
-
-            function checkWebAuthn(email, sendMagicLinkFunc) {
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("GET", "Home/CheckWebAuthnRequest?email=" + email, true);
-                xhttp.send();
-
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState === 4 && this.status === 200) {
-
-                        var responseData = JSON.parse(xhttp.responseText);
-                        if (responseData) {
-                            isFirstLogin = responseData.first_login;
-                            webAuthnRegistered = responseData.webauthn_registered;
-                            if (!responseData.webauthn_registered) {
-                                sendMagicLinkFunc();
-                            } else {
-                                mojoauth.loginWebauthn(email).then((data) => {
-
-                                    document.getElementById("code").style.display = "block";
-                                    document.getElementById("json-code-block").innerHTML = JSON.stringify(data, null, 2);
-                                    document.getElementById("webauthn-button").style.display = "none";
-
-                                }).catch((e) => {
-                                    console.log(e);
-                                });
-                            }
-                        }
-                    }
-                };
-            }
-
-            async function registerWebAuthnStart(accessToken) {
-                var data = await mojoauth.enableWebauthn(accessToken);
-                if (data.authenticated) {
-                    alert("WebAuthn is Registered");
                 }
-            }</script>
+            };
+        }
+
+        async function registerWebAuthnStart(accessToken) {
+            var data = await mojoauth.enableWebauthn(accessToken);
+            if (data.authenticated) {
+                alert("WebAuthn is Registered");
+            }
+        }
+    </script>
 </div>

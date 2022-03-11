@@ -8,15 +8,20 @@ namespace MojoAuth.NET.WebAppSample.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static readonly MojoAuthHttpClient MojoAuthHttpClient = new MojoAuthHttpClient("API_KEY", "API_SECRET");
+        private readonly IConfiguration _config;
+        private readonly MojoAuthHttpClient _mojoAuthHttpClient;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IConfiguration config)
         {
             _logger = logger;
+            _config = config;
+            _mojoAuthHttpClient = new MojoAuthHttpClient(_config["MojoAuth_Key"], _config["MojoAuth_Secret"]);
         }
 
         public IActionResult Index()
         {
+            ViewBag.MojoAuthKey = _config["MojoAuth_Key"];
+            ViewBag.MojoAuthRedirectUri = _config["MojoAuth_RedirectUri"];
             return View();
         }
 
@@ -28,7 +33,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
         [HttpPost]
         public async Task<JsonResult> SendMagicLink([FromBody] MagicLinkModel magicLinkModel)
         {
-            var sendMagicLinkResponse = await MojoAuthHttpClient.SendMagicLink(magicLinkModel.Email);
+            var sendMagicLinkResponse = await _mojoAuthHttpClient.SendMagicLink(magicLinkModel.Email);
             
             if (sendMagicLinkResponse.Error != null)
             {
@@ -46,7 +51,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
         [HttpGet]
         public async Task<JsonResult> ValidateStateId([FromQuery] string stateId)
         {
-            var authenticationStatus = await MojoAuthHttpClient.CheckAuthenticationStatus(stateId);
+            var authenticationStatus = await _mojoAuthHttpClient.CheckAuthenticationStatus(stateId);
             if (authenticationStatus.Error != null)
             {
                 var errorResponse = new ErrorResponse
@@ -63,7 +68,7 @@ namespace MojoAuth.NET.WebAppSample.Controllers
        [HttpGet]
         public async Task<JsonResult> CheckWebAuthnRequest([FromQuery] string email)
         {
-            var checkWebAuthnRequest = await MojoAuthHttpClient.CheckWebAuthnRequest(email);
+            var checkWebAuthnRequest = await _mojoAuthHttpClient.CheckWebAuthnRequest(email);
             if (checkWebAuthnRequest.Error != null)
             {
                 var errorResponse = new ErrorResponse
