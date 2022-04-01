@@ -2,7 +2,7 @@
 
 ## Documentation
 
-* [Configuration](https://mojoauth.com/docs/sdks/asp.net/) - Everything you need to begin using the MojoAuth SDK.
+* [Configuration](https://mojoauth.com/docs/sdks/asp-dot-net/) - Everything you need to begin using the MojoAuth SDK.
 
 ## Installation
 

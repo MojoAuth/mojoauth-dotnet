@@ -74,6 +74,19 @@ namespace MojoAuth.NET
             var response = await this.Execute(checkWebAuthnRequest);
             return new Response<CheckWebAuthnResponse>(response);
         }
+        public async Task<Response<PhoneResponse>> SendPhoneOTP(string phone)
+        {
+            var phoneOtpRequest = new PhoneOtpRequest(phone);
+            var response = await this.Execute(phoneOtpRequest);
+            return new Response<PhoneResponse>(response);
+        }
+
+        public async Task<Response<VerifyPhoneOtpResponse>> VerifyPhoneOTP(string stateId, string otp)
+        {
+            var verifyPhoneOtpRequest = new VerifyPhoneOtpRequest(stateId, otp);
+            var response = await this.Execute(verifyPhoneOtpRequest);
+            return new Response<VerifyPhoneOtpResponse>(response);
+        }
 
         
     }
