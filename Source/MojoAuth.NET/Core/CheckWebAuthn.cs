@@ -9,9 +9,6 @@ namespace MojoAuth.NET.Core
     {
         public CheckWebAuthnRequest(string email) : base($"/webauthn/check?email={email}", HttpMethod.Get, typeof(CheckWebAuthnResponse))
         {
-            this.ContentType = BaseConstants.ContentTypeApplicationJson;
-            var body = new EmailOtpPayload { Email = email };
-            this.Body = body;
         }
     }
 
