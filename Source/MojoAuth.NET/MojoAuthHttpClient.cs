@@ -68,9 +68,14 @@ namespace MojoAuth.NET
             return new Response<ValidateTokenResponse>(response);
         }
 
-        public async Task<Response<CheckWebAuthnResponse>> CheckWebAuthnRequest(string email)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="identifier"></param>
+        /// <returns></returns>
+        public async Task<Response<CheckWebAuthnResponse>> CheckWebAuthnRequest(string identifier)
         {
-            var checkWebAuthnRequest = new CheckWebAuthnRequest(email);
+            var checkWebAuthnRequest = new CheckWebAuthnRequest(identifier);
             var response = await this.Execute(checkWebAuthnRequest);
             return new Response<CheckWebAuthnResponse>(response);
         }
