@@ -66,9 +66,9 @@ namespace MojoAuth.NET.WebAppSample.Controllers
         }
 
        [HttpGet]
-        public async Task<JsonResult> CheckWebAuthnRequest([FromQuery] string email)
+        public async Task<JsonResult> CheckWebAuthnRequest([FromQuery] string identifier)
         {
-            var checkWebAuthnRequest = await _mojoAuthHttpClient.CheckWebAuthnRequest(email);
+            var checkWebAuthnRequest = await _mojoAuthHttpClient.CheckWebAuthnRequest(identifier);
             if (checkWebAuthnRequest.Error != null)
             {
                 var errorResponse = new ErrorResponse
