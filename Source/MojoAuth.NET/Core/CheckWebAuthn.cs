@@ -7,7 +7,7 @@ namespace MojoAuth.NET.Core
 {
     public class CheckWebAuthnRequest : HttpRequest
     {
-        public CheckWebAuthnRequest(string email) : base($"/webauthn/check?email={email}", HttpMethod.Get, typeof(CheckWebAuthnResponse))
+        public CheckWebAuthnRequest(string identifier) : base($"/webauthn/check?identifier={identifier}", HttpMethod.Get, typeof(CheckWebAuthnResponse))
         {
         }
     }
@@ -22,5 +22,9 @@ namespace MojoAuth.NET.Core
         [JsonPropertyName("first_login")]
         [DataMember(Name = "first_login")]
         public bool FirstLogin { get; set; }
+
+        [JsonPropertyName("webauthn_flag")]
+        [DataMember(Name = "webauthn_flag")]
+        public bool WebauthnFlag { get; set; }
     }
 }
