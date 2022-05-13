@@ -116,7 +116,7 @@
 
         function checkWebAuthn ( email,sendMagicLinkFunc ) {
             var xhttp = new XMLHttpRequest();
-            xhttp.open( "GET","Home/CheckWebAuthnRequest?email=" + email,true );
+            xhttp.open( "GET","Home/CheckWebAuthnRequest?identifier=" + email,true );
             xhttp.send();
 
             xhttp.onreadystatechange = function () {
