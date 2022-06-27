@@ -20,9 +20,9 @@ namespace MojoAuth.NET
         /// </summary>
         /// <param name="email"></param>
         /// <returns></returns>
-        public async Task<Response<SendMagicLinkResponse>> SendMagicLink(string email)
+        public async Task<Response<SendMagicLinkResponse>> SendMagicLink(string email, string redirectUrl = "", string language = "")
         {
-            var sendMagicLinkRequest = new SendMagicLinkRequest(email);
+            var sendMagicLinkRequest = new SendMagicLinkRequest(email, redirectUrl, language);
             var response = await this.Execute(sendMagicLinkRequest);
             return new Response<SendMagicLinkResponse>(response);
         }
