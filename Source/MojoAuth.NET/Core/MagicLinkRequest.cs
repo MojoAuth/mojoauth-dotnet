@@ -7,7 +7,8 @@ namespace MojoAuth.NET.Core
 {
     public class SendMagicLinkRequest : HttpRequest
     {
-        public SendMagicLinkRequest(string email) : base("/users/magiclink", HttpMethod.Post, typeof(SendMagicLinkResponse))
+        public SendMagicLinkRequest(string email, string redirectUrl = "", string language = "") 
+            : base($"/users/magiclink?redirect_url={redirectUrl}&language={language}", HttpMethod.Post, typeof(SendMagicLinkResponse))
         {
             this.ContentType = BaseConstants.ContentTypeApplicationJson;
             var body = new SendMagicLinkPayload { Email = email};

@@ -17,12 +17,16 @@ namespace MojoAuth.NET.Core
     [DataContract]
     public class ValidateTokenResponse
     {
-        [JsonPropertyName("is_valid")]
-        [DataMember(Name = "is_valid")]
-        public string IsValid { get; set; }
+        [JsonPropertyName("isValid")]
+        [DataMember(Name = "isValid")]
+        public bool IsValid { get; set; }
 
         [JsonPropertyName("access_token")]
         [DataMember(Name = "access_token")]
         public string AccessToken { get; set; }
+
+        [JsonPropertyName("user")]
+        [DataMember(Name = "user")]
+        public User User { get; set; }
     }
 }
